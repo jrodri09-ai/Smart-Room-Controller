@@ -2,7 +2,7 @@
    Project: Smart Room Controller
    Description: Miterm Project
    Author: Jessica Rodriquez
-   Date:
+   Date: 10/26/2021
 */
 
 #include <OneButton.h>
@@ -96,9 +96,10 @@ void loop() {
   if (buttonState) {
     Serial.printf("button state %i\n", buttonState);
     doorbellringingtext();
-    switchON(3);
+    tone(2,frequency,duration);
+    switchON(0);
     //switchON(2);
-    for (int i = 4; i <= 4; i++) {
+    for (int i = 1; i <= 4; i++) {
       setHue(i, true, HueRed, 100, 255);
     }
     //tone(, frequency, duration);
@@ -126,12 +127,12 @@ void loop() {
   else {
     pixel.clear();
     pixel.show();
-    //noTone(5);
-    for (int i = 4; i <= 4; i++) {
+    noTone(2);
+    for (int i = 1 ; i <= 4; i++) {
       setHue(i, false, 0, 0, 0);
     }
-    switchOFF(3);
-    //switchOFF(2);
+    switchOFF(0);
+    //switchOFF();
     display.clearDisplay();
     display.display();
   }
