@@ -2,7 +2,7 @@
    Project: Smart Room Controller
    Description: Miterm Project
    Author: Jessica Rodriquez
-   Date: 
+   Date:
 */
 
 #include <OneButton.h>
@@ -95,6 +95,12 @@ void loop() {
   currentTime = millis();
   if (buttonState) {
     Serial.printf("button state %i\n", buttonState);
+    doorbellringingtext();
+    switchON(3);
+    //switchON(2);
+    for (int i = 4; i <= 4; i++) {
+      setHue(i, true, HueRed, 100, 255);
+    }
     //tone(, frequency, duration);
     for (int i = 0; i < 2; i++) {
       pixel.fill(blue, 0, PIXELCOUNT);
@@ -108,34 +114,32 @@ void loop() {
     pixel.show();
     pixel.fill(blue, 0, PIXELCOUNT);
     pixel.show();
-    delay(4000);
-    buttonState = false;
     //Use different timer
     //    if (currentTime-lastTime > 5000) {
     //      lastTime = millis();
     //      buttonState = false;
     //      Serial.printf("timer ready");
     // }
-    doorbellringingtext();
-    display.clearDisplay();
-    display.display();
+    delay(4000);
+    buttonState = false;
   }
   else {
     pixel.clear();
     pixel.show();
     //noTone(5);
+    for (int i = 4; i <= 4; i++) {
+      setHue(i, false, 0, 0, 0);
+    }
+    switchOFF(3);
+    //switchOFF(2);
+    display.clearDisplay();
+    display.display();
   }
 }
 
 void click () {
   buttonState = true;
-   Serial.printf("button state %i\n",buttonState);
-  if (buttonState) {
-    switchON(0);
-  }
-    else {
-    switchOFF(0);
-  }
+  Serial.printf("button state %i\n", buttonState);
 }
 
 void doorbellringingtext (void) {
@@ -145,5 +149,4 @@ void doorbellringingtext (void) {
   display.setCursor(0, 0);
   display.printf("Doorbell Ringing!");
   display.display();
-  delay(2000);
 }
