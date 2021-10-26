@@ -1,8 +1,8 @@
 /*
-   Project: Smart Room Controller 
+   Project: Smart Room Controller
    Description:
    Author: Jessica Rodriquez
-   Date: 
+   Date:
 */
 
 
@@ -11,9 +11,12 @@
 #include <Adafruit_NeoPixel.h>
 #include <colors.h>
 #include <IoTTimer.h>
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
 
 int PIXELPIN = 5;
-int PIXELCOUNT = 16;
+int PIXELCOUNT = 12;
 const int BUTTONPIN = 23;
 bool buttonState;
 int pixels;
@@ -38,31 +41,38 @@ void setup() {
 
 void loop() {
   button1.tick();
-
-
-}
-
-void click () {
-  buttonState = !buttonState;
   if (buttonState) {
     Serial.printf("button state %i\n", buttonState);
-    tone(5, frequency, duration);
-    for (int i = 0; i < 2; i++) {
-      timer.startTimer(1000);
+    //tone(, frequency, duration);
+    for (int i = 0; i <= 2; i++) {
+      delay(1000);
       pixel.clear();
-      pixel.fill(blue, 0, 16);
+      pixel.fill(blue, 0, PIXELCOUNT);
       pixel.show();
-      while (!timer.isTimerReady());
-      timer.startTimer(1000);
+      delay(1000);
       pixel.clear();
       pixel.show();
-      while (!timer.isTimerReady());
-      
+      //timer.startTimer(4000);
+    }
+    timer.startTimer(4000);
+    pixel.clear();
+    pixel.fill(blue, 0, PIXELCOUNT);
+    pixel.show();
+    if (timer.isTimerReady()) {
+      buttonState = false;
+      Serial.printf("timer ready");
     }
   }
   else {
     pixel.clear();
     pixel.show();
-    noTone(5);
+    //noTone(5);
   }
+
+
+}
+
+void click () {
+  buttonState = true;
+
 }
