@@ -22,16 +22,21 @@
 #define SCREEN_HEIGHT 64
 #define OLED_RESET 4
 #define SCREEN_ADDRESS 0X3C
+#define pirPin 1
 
 int PIXELPIN = 5;
 int PIXELCOUNT = 12;
+int val = 0;
 const int BUTTONPIN = 23;
 bool buttonState;
+bool motionState = false;
+bool displayShown = false;
 int pixels;
 unsigned int frequency = 396;
 unsigned long duration = 1000;
 int currentTime;
 int lastTime;
+int color;
 
 OneButton button1(BUTTONPIN, false); //define objects
 Adafruit_NeoPixel pixel(PIXELCOUNT, PIXELPIN, NEO_GRB + NEO_KHZ800 );
@@ -63,24 +68,21 @@ void setup() {
 
   Serial.printf("Starting Program:\n");
 
-  //Start ethernet connection
-  status = Ethernet.begin(mac);
-  if (!status) {
-    Serial.printf("failed to configure Ethernet using DHCP \n");
-    //no point in continueing
-    while (1);
-  }
-
-  //print your local IP address
-  Serial.print("My IP address: ");
-  for (thisbyte = 0; thisbyte < 3; thisbyte++) {
-    //print value of each byte of the IP address
-    Serial.printf("%i.", Ethernet.localIP()[thisbyte]);
-  }
-  Serial.printf("%i\n", Ethernet.localIP()[thisbyte]);
-
-
-
+//    Start ethernet connection
+    status = Ethernet.begin(mac);
+    if (!status) {
+      Serial.printf("failed to configure Ethernet using DHCP \n");
+      //no point in continueing
+      while (1);
+    }
+  
+    //print your local IP address
+    Serial.print("My IP address: ");
+    for (thisbyte = 0; thisbyte < 3; thisbyte++) {
+      //print value of each byte of the IP address
+      Serial.printf("%i.", Ethernet.localIP()[thisbyte]);
+    }
+    Serial.printf("%i\n", Ethernet.localIP()[thisbyte]);
   display.display();
   delay(2000);
   pixel.begin();
@@ -88,6 +90,8 @@ void setup() {
   pixel.setBrightness(25);
   button1.attachClick(click); // initialize objects
   buttonState = false ; // set variables
+
+  pinMode (pirPin, INPUT);
 }
 
 void loop() {
@@ -96,13 +100,17 @@ void loop() {
   if (buttonState) {
     Serial.printf("button state %i\n", buttonState);
     doorbellringingtext();
-    tone(2,frequency,duration);
+    tone(2, frequency, duration);
     switchON(0);
-    //switchON(2);
-    for (int i = 1; i <= 4; i++) {
-      setHue(i, true, HueRed, 100, 255);
+    switchON(2);
+    switchON(3);
+    for (int i = 1; i <= 6; i++) {
+      setHue(i, true, HueRainbow[color], 100, 255);
+      color++;
+      if(color > 7) {
+        color = 0;
+      }
     }
-    //tone(, frequency, duration);
     for (int i = 0; i < 2; i++) {
       pixel.fill(blue, 0, PIXELCOUNT);
       pixel.show();
@@ -124,17 +132,35 @@ void loop() {
     delay(4000);
     buttonState = false;
   }
+  //this else turns everything off
   else {
     pixel.clear();
     pixel.show();
     noTone(2);
-    for (int i = 1 ; i <= 4; i++) {
+    for (int i = 1 ; i <= 6; i++) {
       setHue(i, false, 0, 0, 0);
     }
     switchOFF(0);
-    //switchOFF();
-    display.clearDisplay();
-    display.display();
+    switchOFF(2);
+    switchOFF(3);
+  }
+  motionState = digitalRead(pirPin);
+  if (motionState == true) {
+    Serial.println("Motion detected!");
+    motionState = true;
+    if (!displayShown) {
+      motiondetected();
+      packagealert();
+      displayShown = true;
+      timer.startTimer(2000);
+    }
+  }
+  else {
+    if (timer.isTimerReady()) {
+      displayShown = false;
+      display.clearDisplay();
+      display.display();
+    }
   }
 }
 
@@ -143,6 +169,7 @@ void click () {
   Serial.printf("button state %i\n", buttonState);
 }
 
+//Text that displays when someone rings doorbell
 void doorbellringingtext (void) {
   display.clearDisplay();
   display.setTextSize(1);
@@ -150,4 +177,26 @@ void doorbellringingtext (void) {
   display.setCursor(0, 0);
   display.printf("Doorbell Ringing!");
   display.display();
+}
+// Code for motion detetectior
+void motiondetected (void) {
+  display.clearDisplay();
+  display.setTextSize(2);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, 0);
+  display.printf("Someone\n at door!");
+  display.display();
+}
+
+void packagealert() {
+  for (int i = 0; i < PIXELCOUNT;) {
+    pixel.setPixelColor(i, blue);
+    pixel.show();
+    if (timer.isTimerReady()) {
+      timer.startTimer(50);
+      i++;
+      pixel.clear();
+    }
+  }
+
 }
