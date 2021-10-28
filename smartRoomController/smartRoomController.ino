@@ -23,6 +23,7 @@
 #define OLED_RESET 4
 #define SCREEN_ADDRESS 0X3C
 #define pirPin 1
+#define ledPin 4
 
 int PIXELPIN = 5;
 int PIXELCOUNT = 42;
@@ -32,7 +33,7 @@ bool buttonState;
 bool motionState = false;
 bool displayShown = false;
 int pixels;
-unsigned int frequency = 396; 
+unsigned int frequency = 396;
 unsigned long duration = 1000;
 int currentTime;
 int lastTime;
@@ -66,23 +67,23 @@ void setup() {
   Serial.begin(9600);
   while (!Serial);
 
-  Serial.printf("Starting Program:\n");
-
-//    Start ethernet connection
-//    status = Ethernet.begin(mac);
-//    if (!status) {
-//      Serial.printf("failed to configure Ethernet using DHCP \n");
-//      //no point in continueing
-//      while (1);
-//    }
-//  
-//    //print your local IP address
-//    Serial.print("My IP address: ");
-//    for (thisbyte = 0; thisbyte < 3; thisbyte++) {
-//      //print value of each byte of the IP address
-//      Serial.printf("%i.", Ethernet.localIP()[thisbyte]);
-//    }
-//    Serial.printf("%i\n", Ethernet.localIP()[thisbyte]);
+//  Serial.printf("Starting Program:\n");
+//
+//  //    Start ethernet connection
+//  status = Ethernet.begin(mac);
+//  if (!status) {
+//    Serial.printf("failed to configure Ethernet using DHCP \n");
+//    //no point in continueing
+//    while (1);
+//  }
+//
+//  //print your local IP address
+//  Serial.print("My IP address: ");
+//  for (thisbyte = 0; thisbyte < 3; thisbyte++) {
+//    //print value of each byte of the IP address
+//    Serial.printf("%i.", Ethernet.localIP()[thisbyte]);
+//  }
+//  Serial.printf("%i\n", Ethernet.localIP()[thisbyte]);
   display.display();
   delay(2000);
   pixel.begin();
@@ -91,6 +92,7 @@ void setup() {
   button1.attachClick(click); // initialize objects
   buttonState = false ; // set variables
 
+  pinMode(ledPin, OUTPUT);
   pinMode (pirPin, INPUT);
 }
 
@@ -107,7 +109,7 @@ void loop() {
     for (int i = 1; i <= 6; i++) {
       setHue(i, true, HueRainbow[color], 100, 255);
       color++;
-      if(color > 7) {
+      if (color > 7) {
         color = 0;
       }
     }
@@ -147,6 +149,7 @@ void loop() {
   motionState = digitalRead(pirPin);
   if (motionState == true) {
     Serial.println("Motion detected!");
+    digitalWrite(ledPin, HIGH);
     motionState = true;
     if (!displayShown) {
       motiondetected();
@@ -160,6 +163,7 @@ void loop() {
       displayShown = false;
       display.clearDisplay();
       display.display();
+      digitalWrite(ledPin, LOW);
     }
   }
 }
