@@ -172,11 +172,11 @@ void click () {
 //Text that displays when someone rings doorbell
 void doorbellringingtext (void) {
   display.clearDisplay();
-  display.setTextSize(1);
+  display.setTextSize(2);
   display.setRotation(2);
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(0, 0);
-  display.printf("Doorbell Ringing!");
+  display.printf("Doorbell\n Ringing!");
   display.display();
 }
 // Code for motion detetectior
