@@ -25,14 +25,14 @@
 #define pirPin 1
 
 int PIXELPIN = 5;
-int PIXELCOUNT = 12;
+int PIXELCOUNT = 42;
 int val = 0;
 const int BUTTONPIN = 23;
 bool buttonState;
 bool motionState = false;
 bool displayShown = false;
 int pixels;
-unsigned int frequency = 396;
+unsigned int frequency = 396; 
 unsigned long duration = 1000;
 int currentTime;
 int lastTime;
@@ -152,7 +152,7 @@ void loop() {
       motiondetected();
       packagealert();
       displayShown = true;
-      timer.startTimer(2000);
+      timer.startTimer(1000);
     }
   }
   else {
