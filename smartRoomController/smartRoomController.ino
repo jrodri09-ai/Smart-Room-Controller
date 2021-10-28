@@ -32,6 +32,7 @@ const int BUTTONPIN = 23;
 bool buttonState;
 bool motionState = false;
 bool displayShown = false;
+bool turnThingsOff;
 int pixels;
 unsigned int frequency = 396;
 unsigned long duration = 1000;
@@ -45,8 +46,8 @@ IoTTimer timer;
 Adafruit_SSD1306 display (SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 //EthernetClient client;
-//bool status;   //user to ensure port openned correctly
-//byte thisbyte; //used to get IP address
+bool status;   //user to ensure port openned correctly
+byte thisbyte; //used to get IP address
 
 void setup() {
   Serial.begin (9600) ; // begin processes
@@ -67,23 +68,23 @@ void setup() {
   Serial.begin(9600);
   while (!Serial);
 
-//  Serial.printf("Starting Program:\n");
-//
-//  //    Start ethernet connection
-//  status = Ethernet.begin(mac);
-//  if (!status) {
-//    Serial.printf("failed to configure Ethernet using DHCP \n");
-//    //no point in continueing
-//    while (1);
-//  }
-//
-//  //print your local IP address
-//  Serial.print("My IP address: ");
-//  for (thisbyte = 0; thisbyte < 3; thisbyte++) {
-//    //print value of each byte of the IP address
-//    Serial.printf("%i.", Ethernet.localIP()[thisbyte]);
-//  }
-//  Serial.printf("%i\n", Ethernet.localIP()[thisbyte]);
+  Serial.printf("Starting Program:\n");
+
+  //    Start ethernet connection
+  status = Ethernet.begin(mac);
+  if (!status) {
+    Serial.printf("failed to configure Ethernet using DHCP \n");
+    //no point in continueing
+    while (1);
+  }
+
+  //print your local IP address
+  Serial.print("My IP address: ");
+  for (thisbyte = 0; thisbyte < 3; thisbyte++) {
+    //print value of each byte of the IP address
+    Serial.printf("%i.", Ethernet.localIP()[thisbyte]);
+  }
+  //  Serial.printf("%i\n", Ethernet.localIP()[thisbyte]);
   display.display();
   delay(2000);
   pixel.begin();
@@ -133,27 +134,31 @@ void loop() {
     // }
     delay(4000);
     buttonState = false;
+    turnThingsOff = true;
   }
   //this else turns everything off
   else {
-    pixel.clear();
-    pixel.show();
-    noTone(2);
-    for (int i = 1 ; i <= 6; i++) {
-      setHue(i, false, 0, 0, 0);
+    if (turnThingsOff) {
+      pixel.clear();
+      pixel.show();
+      noTone(2);
+      for (int i = 1 ; i <= 6; i++) {
+        setHue(i, false, 0, 0, 0);
+      }
+      switchOFF(0);
+      switchOFF(2);
+      switchOFF(3);
+      turnThingsOff=false;
     }
-    switchOFF(0);
-    switchOFF(2);
-    switchOFF(3);
   }
   motionState = digitalRead(pirPin);
   if (motionState == true) {
     Serial.println("Motion detected!");
     digitalWrite(ledPin, HIGH);
-    motionState = true;
+    //motionState = true;
     if (!displayShown) {
       motiondetected();
-      packagealert();
+      //packagealert();
       displayShown = true;
       timer.startTimer(1000);
     }
