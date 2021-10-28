@@ -43,9 +43,9 @@ Adafruit_NeoPixel pixel(PIXELCOUNT, PIXELPIN, NEO_GRB + NEO_KHZ800 );
 IoTTimer timer;
 Adafruit_SSD1306 display (SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-EthernetClient client;
-bool status;   //user to ensure port openned correctly
-byte thisbyte; //used to get IP address
+//EthernetClient client;
+//bool status;   //user to ensure port openned correctly
+//byte thisbyte; //used to get IP address
 
 void setup() {
   Serial.begin (9600) ; // begin processes
@@ -69,20 +69,20 @@ void setup() {
   Serial.printf("Starting Program:\n");
 
 //    Start ethernet connection
-    status = Ethernet.begin(mac);
-    if (!status) {
-      Serial.printf("failed to configure Ethernet using DHCP \n");
-      //no point in continueing
-      while (1);
-    }
-  
-    //print your local IP address
-    Serial.print("My IP address: ");
-    for (thisbyte = 0; thisbyte < 3; thisbyte++) {
-      //print value of each byte of the IP address
-      Serial.printf("%i.", Ethernet.localIP()[thisbyte]);
-    }
-    Serial.printf("%i\n", Ethernet.localIP()[thisbyte]);
+//    status = Ethernet.begin(mac);
+//    if (!status) {
+//      Serial.printf("failed to configure Ethernet using DHCP \n");
+//      //no point in continueing
+//      while (1);
+//    }
+//  
+//    //print your local IP address
+//    Serial.print("My IP address: ");
+//    for (thisbyte = 0; thisbyte < 3; thisbyte++) {
+//      //print value of each byte of the IP address
+//      Serial.printf("%i.", Ethernet.localIP()[thisbyte]);
+//    }
+//    Serial.printf("%i\n", Ethernet.localIP()[thisbyte]);
   display.display();
   delay(2000);
   pixel.begin();
@@ -173,6 +173,7 @@ void click () {
 void doorbellringingtext (void) {
   display.clearDisplay();
   display.setTextSize(1);
+  display.setRotation(2);
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(0, 0);
   display.printf("Doorbell Ringing!");
@@ -182,9 +183,10 @@ void doorbellringingtext (void) {
 void motiondetected (void) {
   display.clearDisplay();
   display.setTextSize(2);
+  display.setRotation(2);
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(0, 0);
-  display.printf("Someone\n at door!");
+  display.printf("Motion\n detected!");
   display.display();
 }
 
