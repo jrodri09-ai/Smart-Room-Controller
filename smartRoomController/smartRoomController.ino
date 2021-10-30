@@ -2,7 +2,7 @@
    Project: Smart Room Controller
    Description: Miterm Project
    Author: Jessica Rodriquez
-   Date: 10/26/2021
+   Date: 10/30/2021
 */
 
 #include <OneButton.h>
@@ -26,7 +26,7 @@
 #define ledPin 4
 
 int PIXELPIN = 5;
-int PIXELCOUNT = 42;
+int PIXELCOUNT = 128;
 int val = 0;
 const int BUTTONPIN = 23;
 bool buttonState;
@@ -84,7 +84,7 @@ void setup() {
     //print value of each byte of the IP address
     Serial.printf("%i.", Ethernet.localIP()[thisbyte]);
   }
-  //  Serial.printf("%i\n", Ethernet.localIP()[thisbyte]);
+  Serial.printf("%i\n", Ethernet.localIP()[thisbyte]);
   display.display();
   delay(2000);
   pixel.begin();
@@ -126,12 +126,6 @@ void loop() {
     pixel.show();
     pixel.fill(blue, 0, PIXELCOUNT);
     pixel.show();
-    //Use different timer
-    //    if (currentTime-lastTime > 5000) {
-    //      lastTime = millis();
-    //      buttonState = false;
-    //      Serial.printf("timer ready");
-    // }
     delay(4000);
     buttonState = false;
     turnThingsOff = true;
@@ -148,7 +142,7 @@ void loop() {
       switchOFF(0);
       switchOFF(2);
       switchOFF(3);
-      turnThingsOff=false;
+      turnThingsOff = false;
     }
   }
   motionState = digitalRead(pirPin);
@@ -188,7 +182,7 @@ void doorbellringingtext (void) {
   display.printf("Doorbell\n Ringing!");
   display.display();
 }
-// Code for motion detetectior
+// Text that displays when motion is detected
 void motiondetected (void) {
   display.clearDisplay();
   display.setTextSize(2);
@@ -197,16 +191,4 @@ void motiondetected (void) {
   display.setCursor(0, 0);
   display.printf("Motion\n detected!");
   display.display();
-}
-
-void packagealert() {
-  for (int i = 0; i < PIXELCOUNT;) {
-    pixel.setPixelColor(i, blue);
-    pixel.show();
-    if (timer.isTimerReady()) {
-      timer.startTimer(50);
-      i++;
-      pixel.clear();
-    }
-  }
 }
