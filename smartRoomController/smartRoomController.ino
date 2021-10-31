@@ -149,10 +149,8 @@ void loop() {
   if (motionState == true) {
     Serial.println("Motion detected!");
     digitalWrite(ledPin, HIGH);
-    //motionState = true;
     if (!displayShown) {
       motiondetected();
-      //packagealert();
       displayShown = true;
       timer.startTimer(1000);
     }
